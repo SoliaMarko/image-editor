@@ -32,7 +32,7 @@ type Operation =
   | { type: "filter"; name: "grayscale" | "sepia" };
 ```
 
-## Decisions I'd defend
+## Key Decisions
 
 **Operations are data, not pixels.** A crop stores coordinates, not a cropped bitmap. A slider stores its value, not baked-in pixels. This means non-destructiveness isn't something I have to remember to preserve, it's just how the model works. Reset is `ops = []`, and exporting the edit history is `JSON.stringify(ops)`, so the bonus task came almost for free.
 
@@ -57,7 +57,3 @@ type Operation =
 Two filters, greyscale and sepia. Each one is just a `filter` op and one extra term in the filter string.
 
 The operations log can be exported as JSON: `{ version: 1, createdAt, ops }`. The `version` field is there so the format can change later without breaking files people already saved. Replaying is running those ops back through `renderToCanvas(original, ops)`, so there's no separate replay code to maintain.
-
-## Not built, but the model has room for it
-
-Undo/redo would be a pointer into a history of ops snapshots. A new operation like rotate or resize is one more member of the union and one more branch in the renderer. And because the ops document is just JSON, it could be sent to a server to re-render the image at print resolution.
